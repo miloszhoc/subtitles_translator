@@ -11,7 +11,7 @@ class File(db.Model):
         self.translated_file = translated_file
 
 
-class FileSchema(ma.ModelSchema):
+class FileSchema(ma.Schema):
     class Meta:
         model = File
         session = db.session
