@@ -1,0 +1,108 @@
+html {
+    background-color: #1A2B34 !important;
+}
+
+body {
+    color: snow;
+    background-color: #1A2B34;
+    font-family: Century Gothic;
+    /*background-image: url("img/rain.png");*/
+    /*background-repeat: no-repeat;*/
+}
+
+
+#container {
+    padding: 1%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+    height: 100%;
+}
+
+#search {
+    padding: 1%;
+    clear: both;
+    text-align: center;
+}
+
+
+#content {
+    padding: 1%;
+    margin-top: 8%;
+    background-color: #182025;
+}
+
+
+#today {
+    height: 160px;
+    margin-bottom: 100px;
+}
+
+#tile1 {
+    float: left;
+    height: 150px;
+    width: 48%;
+    padding: 1%;
+    background-color: #3d6c43;
+}
+
+#tile2 {
+    float: left;
+    height: 150px;
+    width: 48%;
+    padding: 1%;
+    background-color: #6c4768;
+}
+
+
+.five_days {
+    float: left;
+    /*border-right: solid 1px;*/
+    height: 150px;
+    width: 31.27%;
+    padding: 1%;
+    background-color: #4a4e6c;
+}
+
+
+input[type=text] {
+    background-color: rgb(61, 135, 135);
+    width: 100%;
+    height: 30px;
+    font-size: 15px;
+    opacity: 1 !important;
+    border: none;
+    color: black;
+    text-align: center;
+}
+
+
+::placeholder {
+    color: #302f2f;
+}
+
+
+p {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+
+h3 {
+    text-align: center;
+    font-size: large;
+}
+
+button {
+    border: none;
+    margin-top: 1%;
+    width: 200px;
+    height: 50px;
+    color: #302f2f;
+}
+
+img {
+    text-align: right;
+    width: 200px;
+    height: 100px;
+}

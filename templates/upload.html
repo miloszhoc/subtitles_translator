@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: #1A2B34">
+<head>
+    <meta charset="UTF-8">
+    <title>Subtitles Translator</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+<style>
+    td {
+        text-align: center;
+    }
+</style>
+
+<div id=container>
+    <div id=search>
+        <h1>Subtitles Translator</h1>
+        <p style="text-decoration: underline">1. Upload your .srt file</p><br>
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".srt"><br><br>
+            <p style="text-decoration: underline">2. Choose destination language</p>
+            {% if data.languages != '' %}
+                <select name="dest_lang">
+                    {% for d in data.languages %}
+                        <option value={{ data.languages[d] }}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+            <br><br>
+            <button type="submit">Translate</button>
+        </form>
+        <br><br>
+        {% if data.error != '' %}
+            <p><span style="background-color: #6c4768; padding: 1%;">{{ data.error }}</span></p>
+        {% endif %}
+        {% if data.translated != '' %}
+            <p><span style="background-color: #6c4768; padding: 1%;">{{ data.translated }}</span></p>
+        {% endif %}
+        <br>
+    </div>
+
+    <div id="content">
+        <p>Recently translated files</p>
+        <hr style="border: 0.5px dashed;">
+        <table style="width:100%;">
+            <tr>
+                <th>No.</th>
+                <th>Original file name</th>
+                <th>Translated file name</th>
+                <th>Download</th>
+            </tr>
+            <form action="/download" method="post">
+                {% for i in data.db_content %}
+                    <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ i.original_file }}</td>
+                    <td>{{ i.translated_file }}</td>
+                    <td>
+                        <button type="submit" name="f_id" value="{{ i.id }}"
+                                style="width: 100%;height: 100%;">
+                            Download
+                        </button>
+                    </td>
+                {% endfor %}
+                </tr>
+            </form>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
