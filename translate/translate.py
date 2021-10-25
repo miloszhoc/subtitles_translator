@@ -14,11 +14,6 @@ class Translator:
         except translator_exceptions.LangDoesNotExists as e:
             print(e.message)
         else:
-            try:
-                for line in self.subtitles_parser.entire_subtitles(s_t.translate):
-                    with open(out_file, 'a+', encoding='utf-8') as f:
-                        f.write(line)
-            except translator_exceptions.InvalidApiKey as e:
-                print(e.message)
-            else:
-                return 'Translated'
+            for line in self.subtitles_parser.entire_subtitles(s_t.translate):
+                with open(out_file, 'a+', encoding='utf-8') as f:
+                    f.write(line)
