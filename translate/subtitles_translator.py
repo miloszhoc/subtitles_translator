@@ -17,14 +17,14 @@ class SubtitlesTranslatorMicrosoft:
         full_url = url + query_params
 
         headers = {'Ocp-Apim-Subscription-Key': self._subscriptionKey,
+                   'Ocp-Apim-Subscription-Region': 'northeurope',
                    'Content-Type': 'application/json',
-                   'Content-Length': '1',
                    'X-ClientTraceId': str(uuid.uuid4())}
 
-        body = [{"Text": text}]
+        body = [{"text": text}]
 
-        r = requests.post(full_url, headers=headers,
-                          json=body)
+        r = requests.post(full_url, headers=headers, json=body)
+
         if r.status_code == 200:
             return r.json()[0]['translations'][0]['text']
         else:
