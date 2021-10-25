@@ -6,6 +6,17 @@ from flask_migrate import Migrate
 from flask_azure_storage import FlaskAzureStorage
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET')
+
+# database access
+DB_HOST = os.environ.get('DB_HOST')
+DB_USER = os.environ.get('DB_USER')
+DB_PASS = os.environ.get('DB_PASS')
+DB_NAME = os.environ.get('DB_NAME')
+DB_TABLE = os.environ.get('DB_TABLE')
+DB_PORT = os.environ.get('DB_PORT')
+
+API_KEY = os.environ.get('API_KEY')
 
 DB_URL = 'postgresql+psycopg2://{user}:{passwd}@{url}:{port}/{db}'.format(user=DB_USER,
                                                                           passwd=DB_PASS,

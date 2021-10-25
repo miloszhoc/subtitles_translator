@@ -1,8 +1,10 @@
 import os
 from config import app, db, jsonify, request, API_KEY, ALLOWED_EXTENSIONS, azure_storage, AZURE_CONTAINER_NAME
 import models
-from flask import render_template, url_for, redirect, send_file
+from flask import render_template, url_for, redirect, send_file, session
 from werkzeug.utils import secure_filename
+import uuid
+from translate.exceptions.translator_exceptions import InvalidApiKey
 from translate.languages import show_all_languages_translation
 from translate.translate import Translator
 import requests
@@ -123,15 +125,24 @@ def translate_subtitles(file, lang):
     os.remove(translated_file_path)
 
     add_file(original_filename, translated_file_name)
+    return 'Translated'
 
 
 @app.route('/', methods=['GET', 'POST'])
 def upload():
+    if 'SESSID' not in session:
+        is_logged = False
+        return redirect(url_for('login'))
+    else:
+        is_logged = True
+
     BASE_URL = request.url_root
+
     data = {'languages': show_all_languages_translation(),
             'error': '',
             'translated': '',
-            'db_content': []}
+            'db_content': [],
+            'is_logged': is_logged}
 
     file_list = requests.get('{}files'.format(BASE_URL)).json()
 
@@ -144,13 +155,32 @@ def upload():
             data['error'] = 'Please choose file and language.'
 
         if file and extensions(file.filename):
-            translate = translate_subtitles(file, lang)
-
-            data['translated'] = translate
-
-            # redirect to '/' route in order to reload database content
-            return redirect(url_for('upload'))
+            try:
+                translate = translate_subtitles(file, lang)
+            except InvalidApiKey as e:
+                data['error'] = e.message
+            else:
+                data['translated'] = translate
+                # redirect to '/' route in order to reload database content
+                return redirect(url_for('upload'))
     return render_template("upload.html", data=data)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    data = {}
+    data['error'] = ''
+    if request.method == 'POST':
+        session['SESSID'] = str(uuid.uuid4())
+        return redirect(url_for('upload'))
+    return render_template("login.html", data=data)
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    if request.method == 'GET':
+        session.pop('SESSID')
+        return redirect(url_for('login'))
 
 
 if __name__ == '__main__':

@@ -14,9 +14,14 @@
 </style>
 
 <div id=container>
+    <div id="top-menu" style="text-align: right; width: 100%">
+        {% if data.is_logged %}
+            <a href="{{ url_for('logout') }}" style="color: white;">Logout</a>
+        {% endif %}
+    </div>
     <div id=search>
         <h1>Subtitles Translator</h1>
-        <p style="text-decoration: underline">1. Upload your .srt file</p><br>
+        <p style="text-decoration: underline;">1. Upload your .srt file</p><br>
         <form method="post" enctype="multipart/form-data">
             <input type="file" name="file" accept=".srt"><br><br>
             <p style="text-decoration: underline">2. Choose destination language</p>
