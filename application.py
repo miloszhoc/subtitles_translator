@@ -171,8 +171,20 @@ def login():
     data = {}
     data['error'] = ''
     if request.method == 'POST':
-        session['SESSID'] = str(uuid.uuid4())
-        return redirect(url_for('upload'))
+        schema = models.UsersSchema(many=True)
+        users = models.Users.query.order_by(models.Users.id.desc())
+        table_data = jsonify(schema.dump(users))
+
+        for row in table_data.json:
+            if row['login'] == request.form['login']:
+                if row['password'] == request.form['passwd']:
+                    session['SESSID'] = str(uuid.uuid4())
+                    return redirect(url_for('upload'))
+                else:
+                    data['error'] = 'Incorrect password'
+            else:
+                data['error'] = 'Incorrect login'
+
     return render_template("login.html", data=data)
 
 
