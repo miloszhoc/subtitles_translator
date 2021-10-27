@@ -9,6 +9,7 @@ from translate.languages import show_all_languages_translation
 from translate.translate import Translator
 from io import BytesIO
 import datetime
+import hashlib
 
 # for uploaded files
 UPLOAD_FOLDER = r'files/'
@@ -170,7 +171,7 @@ def login():
 
         for row in table_data.json:
             if row['login'] == request.form['login']:
-                if row['password'] == request.form['passwd']:
+                if row['password'] == hashlib.sha256(request.form['passwd'].encode('UTF-8')).hexdigest():
                     user = models.Users.query.get(row['id']).id
                     session['SESSID'] = str(user) + '__' + str(uuid.uuid4())
                     return redirect(url_for('upload'))
