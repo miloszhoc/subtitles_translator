@@ -7,7 +7,6 @@ import uuid
 from translate.exceptions.translator_exceptions import InvalidApiKey
 from translate.languages import show_all_languages_translation
 from translate.translate import Translator
-import requests
 from io import BytesIO
 import datetime
 
@@ -66,27 +65,20 @@ def download():
     return redirect(url_for('upload'))
 
 
-@app.route('/files', methods=['GET'])
-def get_files():
-    schema = models.FileSchema(many=True)
-    files = models.File.query.order_by(models.File.id.desc())
-    data = schema.dump(files)
-    return jsonify(data)
-
-
 # add file to database
-def add_file(original, translated):
+def add_file(original, translated, user_id):
     success = False
     error = ''
     data = []
     try:
-        new_file = models.File(original, translated)
+        new_file = models.File(original, translated, user_id)
         db.session.add(new_file)
         db.session.commit()
         db.session.refresh(new_file)
         data = {'id': new_file.id,
                 'original_file': original,
-                'translated': translated}
+                'translated': translated,
+                'user_id': user_id}
         success = True
     except Exception as e:
         error = str(e)
@@ -96,7 +88,7 @@ def add_file(original, translated):
                 'error': error}
 
 
-def translate_subtitles(file, lang):
+def translate_subtitles(file, lang, user_id):
     original_filename = secure_filename(file.filename)  # source file name
     original_filename = add_timestamp(original_filename)
     path_to_original_file = os.path.join(UPLOAD_FOLDER + original_filename)  # path to source file
@@ -124,7 +116,7 @@ def translate_subtitles(file, lang):
     os.remove(path_to_original_file)
     os.remove(translated_file_path)
 
-    add_file(original_filename, translated_file_name)
+    add_file(original_filename, translated_file_name, user_id)
     return 'Translated'
 
 
@@ -136,15 +128,16 @@ def upload():
     else:
         is_logged = True
 
-    BASE_URL = request.url_root
-
     data = {'languages': show_all_languages_translation(),
             'error': '',
             'translated': '',
             'db_content': [],
             'is_logged': is_logged}
 
-    file_list = requests.get('{}files'.format(BASE_URL)).json()
+    schema = models.FileSchema(many=True)
+    user_id = session['SESSID'].split('__')[0]
+    files = models.File.query.filter_by(user_id=user_id).order_by(models.File.id.desc())
+    file_list = jsonify(schema.dump(files)).json
 
     data['db_content'] = file_list
 
@@ -156,7 +149,7 @@ def upload():
 
         if file and extensions(file.filename):
             try:
-                translate = translate_subtitles(file, lang)
+                translate = translate_subtitles(file, lang, user_id)
             except InvalidApiKey as e:
                 data['error'] = e.message
             else:
@@ -178,12 +171,13 @@ def login():
         for row in table_data.json:
             if row['login'] == request.form['login']:
                 if row['password'] == request.form['passwd']:
-                    session['SESSID'] = str(uuid.uuid4())
+                    user = models.Users.query.get(row['id']).id
+                    session['SESSID'] = str(user) + '__' + str(uuid.uuid4())
                     return redirect(url_for('upload'))
                 else:
                     data['error'] = 'Incorrect password'
             else:
-                data['error'] = 'Incorrect login'
+                data['error'] = 'Incorrect password'
 
     return render_template("login.html", data=data)
 

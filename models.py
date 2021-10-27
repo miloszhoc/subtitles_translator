@@ -7,9 +7,10 @@ class File(db.Model):
     translated_file = db.Column(db.String, nullable=False, default='default translated')
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
-    def __init__(self, original_file, translated_file):
+    def __init__(self, original_file, translated_file, user_id):
         self.original_file = original_file
         self.translated_file = translated_file
+        self.user_id = user_id
 
 
 class FileSchema(ma.Schema):
