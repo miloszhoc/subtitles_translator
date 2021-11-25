@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'subtitles-translator'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_662329876C5B43A9980D16908FA43CC1 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_57DB82A669D34486B8B468ECE2DDCD95 }}
